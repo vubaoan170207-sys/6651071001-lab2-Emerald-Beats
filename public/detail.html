@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi Tiết Bài Hát | Playlist Manager</title>
+  <meta name="description" content="Xem chi tiết thông tin ca khúc, lời bài hát đầy đủ và các bài hát liên quan." />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- =========================================================
+       1. TOP NAVIGATION BAR
+       ========================================================= -->
+  <div class="container">
+    <div class="detail-top-bar">
+      <a href="index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay lại danh sách bài hát</span>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <button type="button" id="detailTopFavBtn" class="player-fav-btn" aria-label="Thêm hoặc xóa khỏi yêu thích">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       2. KHÔNG TÌM THẤY BÀI HÁT (NOT FOUND STATE)
+       ========================================================= -->
+  <div id="notFoundSection" class="empty-state" style="display: none; margin-top: 4rem;">
+    <div class="empty-icon" style="color: #fb7185; border-color: rgba(251, 113, 133, 0.3);">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h3 class="empty-title">Không tìm thấy bài hát</h3>
+    <p class="empty-desc">
+      Bài hát bạn đang tìm kiếm không tồn tại hoặc đã bị xóa khỏi hệ thống.
+    </p>
+    <a href="index.html" class="primary-btn">
+      <i class="fas fa-arrow-left"></i>
+      <span>Quay về trang danh sách</span>
+    </a>
+  </div>
+
+  <!-- =========================================================
+       3. NỘI DUNG CHI TIẾT CHÍNH (MAIN DETAIL CONTENT)
+       ========================================================= -->
+  <main id="detailMainContent" class="main-content" style="padding-top: 0; display: none;">
+    <div class="container">
+      <!-- 3.1 Hero Card -->
+      <section class="detail-hero-card" aria-label="Thông tin bài hát nổi bật">
+        <div class="detail-cover-wrap">
+          <img id="detailCover" src="" alt="Ảnh bìa ca khúc" class="detail-cover-img" />
+        </div>
+
+        <div class="detail-hero-content">
+          <div>
+            <div class="detail-badges-row">
+              <span id="detailGenre" class="detail-badge-pill">
+                <i class="fas fa-tag"></i> Pop
+              </span>
+              <span id="detailDate" class="detail-badge-pill">
+                <i class="far fa-calendar-alt"></i> 2024-06-08
+              </span>
+            </div>
+
+            <h1 id="detailTitle" class="detail-main-title">Tên bài hát</h1>
+            <p id="detailArtist" class="detail-main-artist">Nghệ sĩ thể hiện</p>
+          </div>
+
+          <!-- Thông số chi tiết -->
+          <div class="detail-meta-grid">
+            <div class="detail-meta-item">
+              <small>Album phát hành</small>
+              <strong id="detailAlbum">Tên album</strong>
+            </div>
+
+            <div class="detail-meta-item">
+              <small>Thời lượng</small>
+              <strong id="detailDuration">00:00</strong>
+            </div>
+
+            <div class="detail-meta-item">
+              <small>Tổng lượt nghe</small>
+              <strong id="detailPlays">0</strong>
+            </div>
+
+            <div class="detail-meta-item">
+              <small>Giá bản quyền số</small>
+              <strong id="detailPrice" style="color: var(--primary-400);">0 ₫</strong>
+            </div>
+          </div>
+
+          <!-- Nút thao tác -->
+          <div class="detail-action-buttons">
+            <button type="button" id="detailMainPlayBtn" class="detail-play-btn">
+              <i class="fas fa-play"></i>
+              <span>Phát bài hát</span>
+            </button>
+
+            <button type="button" id="detailHeroFavBtn" class="detail-fav-btn">
+              <i class="far fa-heart"></i>
+              <span>Thêm vào yêu thích</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3.2 Content Grid (Mô tả, Lời bài hát & Bài hát liên quan) -->
+      <div class="detail-content-grid">
+        <!-- Cột trái: Mô tả & Lời bài hát -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <!-- Card Giới thiệu -->
+          <section class="detail-section-card">
+            <h2 class="detail-section-title">
+              <i class="fas fa-info-circle"></i> Giới thiệu về bài hát
+            </h2>
+            <p id="detailDesc" class="desc-box" style="font-size: 0.95rem;">
+              Đang tải phần mô tả bài hát...
+            </p>
+
+            <div id="detailExcerptBox" class="quote-box" style="margin-top: 1rem;">
+              <p id="detailExcerpt">“Trích dẫn lời bài hát...”</p>
+            </div>
+          </section>
+
+          <!-- Card Lời bài hát chính thức -->
+          <section class="detail-section-card">
+            <div class="lyrics-header">
+              <h2 class="detail-section-title" style="margin-bottom: 0;">
+                <i class="fas fa-music"></i> Lời bài hát chính thức
+              </h2>
+              <button type="button" id="detailCopyLyricsBtn" class="copy-lyrics-btn">
+                <i class="far fa-copy"></i>
+                <span>Sao chép lời</span>
+              </button>
+            </div>
+            <div id="detailLyrics" class="detail-lyrics-box" style="margin-top: 1rem;">
+              Đang tải lời bài hát...
+            </div>
+          </section>
+        </div>
+
+        <!-- Cột phải: Bài hát tương tự -->
+        <div>
+          <section class="detail-section-card">
+            <h2 class="detail-section-title">
+              <i class="fas fa-compact-disc"></i> Bài hát cùng thể loại / ca sĩ
+            </h2>
+            <div id="relatedTracksList" class="related-list">
+              <!-- Render động bằng JS -->
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================
+       4. TRÌNH PHÁT NHẠC CỐ ĐỊNH (STICKY BOTTOM AUDIO PLAYER)
+       ========================================================= -->
+  <aside id="audioPlayerBar" class="audio-player-bar" aria-label="Trình phát nhạc cố định">
+    <div class="player-inner">
+      <!-- 4.1 Thông tin bài hát -->
+      <div class="player-track-info">
+        <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+          <div class="player-thumb-wrap">
+            <img id="playerThumb" src="" alt="Thumbnail bài hát" class="player-thumb" />
+            <div id="playerPulse" class="player-thumb-pulse" style="display: none;">
+              <span class="ping-dot"></span>
+            </div>
+          </div>
+          <div class="player-text-wrap">
+            <a href="#" id="playerTitleLink" class="player-title">Tên bài hát</a>
+            <p id="playerArtist" class="player-artist">Nghệ sĩ thể hiện</p>
+          </div>
+        </div>
+
+        <button type="button" id="playerFavBtn" class="player-fav-btn" aria-label="Yêu thích bài hát này">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
+
+      <!-- 4.2 Cụm điều khiển ở giữa -->
+      <div class="player-center">
+        <div class="player-controls">
+          <button type="button" id="playerPrevBtn" class="player-ctrl-btn" aria-label="Bài trước đó" title="Phát bài trước">
+            <i class="fas fa-step-backward"></i>
+          </button>
+
+          <button type="button" id="playerMainPlayBtn" class="player-main-play-btn" aria-label="Phát hoặc tạm dừng" title="Phát/Tạm dừng">
+            <i id="playerPlayIcon" class="fas fa-play"></i>
+          </button>
+
+          <button type="button" id="playerNextBtn" class="player-ctrl-btn" aria-label="Bài kế tiếp" title="Phát bài tiếp theo">
+            <i class="fas fa-step-forward"></i>
+          </button>
+        </div>
+
+        <div class="player-scrubber-wrap">
+          <span id="playerCurrentTime" class="time-label current">00:00</span>
+          <input
+            type="range"
+            id="playerScrubber"
+            class="scrubber-slider"
+            min="0"
+            max="180"
+            value="0"
+            aria-label="Thanh tua thời lượng bài hát"
+          />
+          <span id="playerTotalTime" class="time-label">00:00</span>
+        </div>
+      </div>
+
+      <!-- 4.3 Cụm âm lượng -->
+      <div class="player-right">
+        <div class="volume-box">
+          <button type="button" id="playerMuteBtn" class="vol-btn" aria-label="Tắt hoặc bật tiếng">
+            <i class="fas fa-volume-up"></i>
+          </button>
+          <input
+            type="range"
+            id="playerVolSlider"
+            class="vol-slider"
+            min="0"
+            max="100"
+            value="80"
+            aria-label="Điều chỉnh mức âm lượng"
+          />
+          <span id="playerVolText" class="vol-text">80%</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       5. JAVASCRIPT MODULES
+       ========================================================= -->
+  <script src="js/data.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/detail.js"></script>
+</body>
+</html>

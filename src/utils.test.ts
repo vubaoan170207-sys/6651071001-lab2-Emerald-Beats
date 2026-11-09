@@ -7,6 +7,11 @@ describe('formatCurrency', () => {
     expect(result.replace(/\s/g, '')).toContain('150.000');
     expect(result).toMatch(/₫|VND/);
   });
+  it('định dạng đúng với số tiền bằng 0', () => {
+    const result = formatCurrency(0);
+    expect(result.replace(/\s/g, '')).toContain('0');
+    expect(result).toMatch(/₫|VND/);
+  });
 });
 
 describe('truncateText', () => {
