@@ -1,13 +1,409 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Danh Sách Nhạc / Playlist Manager</title>
-  </head>
-  <body class="bg-slate-900 text-slate-100 antialiased min-h-screen">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Danh Sách Nhạc - Playlist Manager | HTML • CSS • JS</title>
+  <meta name="description" content="Hệ thống quản lý và phát danh sách bài hát trực tuyến chuẩn mực bằng HTML, CSS và JavaScript thuần." />
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- =========================================================
+       1. SITE HEADER & NAVIGATION
+       ========================================================= -->
+  <header class="site-header">
+    <div class="container">
+      <!-- Top row: Brand & View Mode Switcher -->
+      <div class="header-top">
+        <div class="brand-wrapper">
+          <div class="brand-icon">
+            <i class="fas fa-music"></i>
+          </div>
+          <div>
+            <h1 class="brand-title">
+              Playlist Manager
+              <span class="tech-badge">HTML • CSS • JS</span>
+            </h1>
+            <p class="brand-subtitle">
+              Hệ thống quản lý & phát nhạc trực tuyến chuẩn mực
+            </p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs: Tất cả vs Yêu thích -->
+        <nav class="view-tabs" aria-label="Chế độ xem danh sách">
+          <button type="button" id="tabAllBtn" class="tab-btn active">
+            <i class="fas fa-broadcast-tower"></i>
+            <span>Tất cả bài hát</span>
+            <span id="totalCountBadge" class="counter-pill">22</span>
+          </button>
+
+          <button type="button" id="tabFavBtn" class="tab-btn">
+            <i class="fas fa-heart"></i>
+            <span>Yêu thích</span>
+            <span id="favCountBadge" class="counter-pill">0</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Filter bar: Tìm kiếm + Thể loại + Sắp xếp -->
+      <div class="filter-bar">
+        <!-- Search Input -->
+        <div class="search-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="search"
+            id="searchInput"
+            class="search-input"
+            placeholder="Tìm kiếm bài hát, ca sĩ, album..."
+            aria-label="Tìm kiếm bài hát theo tên hoặc nghệ sĩ"
+          />
+          <button type="button" id="clearSearchBtn" class="clear-search-btn" aria-label="Xóa từ khóa tìm kiếm">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Genre Dropdown -->
+        <div class="filter-group">
+          <label for="genreSelect" class="filter-label">Thể loại:</label>
+          <select id="genreSelect" class="select-control" aria-label="Lọc theo thể loại bài hát">
+            <option value="ALL">Tất cả thể loại</option>
+          </select>
+        </div>
+
+        <!-- Sort Dropdown -->
+        <div class="filter-group">
+          <label for="sortSelect" class="filter-label">
+            <i class="fas fa-sort-amount-down" style="color: var(--primary-400);"></i> Sắp xếp:
+          </label>
+          <select id="sortSelect" class="select-control" aria-label="Sắp xếp danh sách bài hát">
+            <option value="default">Thứ tự mặc định</option>
+            <option value="title-asc">Tên bài hát (A → Z)</option>
+            <option value="title-desc">Tên bài hát (Z → A)</option>
+            <option value="duration-desc">Thời lượng (Dài nhất)</option>
+            <option value="duration-asc">Thời lượng (Ngắn nhất)</option>
+            <option value="plays-desc">Lượt nghe nhiều nhất</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       2. MAIN CONTENT
+       ========================================================= -->
+  <main class="main-content">
+    <div class="container">
+      <!-- 2.1 Thống kê nhanh (Stats Widget) -->
+      <section class="stats-grid" aria-label="Thống kê nhanh danh sách phát">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-music"></i>
+          </div>
+          <div>
+            <p class="stat-label">Tổng số bài hát</p>
+            <h3 class="stat-value">
+              <span id="statTotalTracks">22</span>
+              <span class="stat-unit">bản ghi</span>
+            </h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-heart"></i>
+          </div>
+          <div>
+            <p class="stat-label">Bài hát yêu thích</p>
+            <h3 class="stat-value">
+              <span id="statFavTracks">0</span>
+              <span class="stat-unit">bài đã thả tim</span>
+            </h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="far fa-clock"></i>
+          </div>
+          <div>
+            <p id="statDurationTitle" class="stat-label">Tổng thời lượng playlist</p>
+            <h3 id="statTotalDuration" class="stat-value" style="font-size: 1.25rem;">
+              0 giờ 0 phút
+            </h3>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2.2 Tiêu đề danh mục & Nút đặt lại bộ lọc -->
+      <div class="section-header">
+        <div>
+          <h2 id="sectionTitle" class="section-title">
+            <i class="fas fa-headphones"></i>
+            Danh Sách Nhạc Thịnh Hành
+          </h2>
+          <p id="sectionSubtitle" class="section-subtitle">
+            Đang tải dữ liệu âm nhạc...
+          </p>
+        </div>
+
+        <button type="button" id="resetFiltersBtn" class="reset-filter-btn" style="display: none;">
+          <i class="fas fa-redo-alt"></i>
+          Đặt lại bộ lọc & sắp xếp
+        </button>
+      </div>
+
+      <!-- 2.3 Lưới hiển thị bài hát (Track Grid) -->
+      <section id="trackGrid" class="track-grid" aria-label="Danh sách các bài hát">
+        <!-- Render động bằng JavaScript -->
+      </section>
+
+      <!-- 2.4 Trạng thái rỗng (Empty State) -->
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-icon">
+          <i class="fas fa-music"></i>
+        </div>
+        <h3 id="emptyTitle" class="empty-title">Không tìm thấy bài hát phù hợp</h3>
+        <p id="emptyDesc" class="empty-desc">
+          Hãy thử thay đổi từ khóa tìm kiếm hoặc chọn một thể loại âm nhạc khác.
+        </p>
+        <button type="button" id="emptyActionBtn" class="primary-btn">
+          Xóa tất cả bộ lọc
+        </button>
+      </div>
+
+      <!-- 2.5 Đăng ký nhận bản tin (Newsletter Subscription) -->
+      <section class="newsletter-card" aria-labelledby="newsletterHeading">
+        <div class="newsletter-inner">
+          <h3 id="newsletterHeading" class="newsletter-title">
+            Đăng ký nhận bản tin âm nhạc mới nhất
+          </h3>
+          <p class="newsletter-desc">
+            Nhận thông báo sớm nhất về các ca khúc độc quyền, bảng xếp hạng âm nhạc và ưu đãi bản quyền mỗi tuần.
+          </p>
+
+          <form id="newsletterForm" class="newsletter-form" novalidate>
+            <input
+              type="email"
+              id="newsletterEmail"
+              class="newsletter-input"
+              placeholder="Nhập địa chỉ email của bạn (vd: ban@email.com)"
+              aria-label="Địa chỉ email đăng ký"
+              required
+            />
+            <button type="submit" class="primary-btn">
+              <i class="fas fa-paper-plane"></i>
+              <span>Đăng ký</span>
+            </button>
+          </form>
+
+          <div id="newsletterMsg"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- =========================================================
+       3. MODAL XEM NHANH BÀI HÁT (QUICK VIEW TRACK MODAL)
+       ========================================================= -->
+  <div id="quickViewModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <!-- Nút đóng (X) -->
+      <button type="button" id="modalCloseBtn" class="modal-close-btn" aria-label="Đóng cửa sổ chi tiết bài hát">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="modal-scrollable">
+        <!-- Phần đầu thông tin -->
+        <div class="modal-header-info">
+          <div class="modal-cover-wrap">
+            <img id="modalCover" src="" alt="Ảnh bìa bài hát" class="modal-cover-img" />
+            <button type="button" id="modalPlayTrigger" class="modal-play-trigger" aria-label="Phát hoặc tạm dừng bài hát">
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+
+          <div class="modal-meta">
+            <div class="modal-tags">
+              <span id="modalGenreTag" class="modal-genre-tag">Pop</span>
+              <span id="modalReleaseDate" class="modal-date-tag">
+                <i class="far fa-calendar-alt"></i> 2024-06-08
+              </span>
+            </div>
+
+            <h2 id="modalTrackTitle" class="modal-track-title">Tên bài hát</h2>
+            <p id="modalArtist" class="modal-artist">Nghệ sĩ thể hiện</p>
+
+            <div class="modal-subinfo">
+              <span><i class="fas fa-compact-disc"></i> <span id="modalAlbum">Album</span></span>
+              <span>•</span>
+              <span><i class="far fa-clock"></i> <span id="modalDuration">00:00</span></span>
+            </div>
+
+            <div class="modal-stats-row">
+              <div>
+                <span class="card-price-label">Bản quyền số</span>
+                <span id="modalPrice" class="modal-price-val">25.000 ₫</span>
+              </div>
+              <div>
+                <span class="card-price-label">Lượt nghe</span>
+                <span id="modalPlays" class="stat-value" style="font-size: 0.95rem;">125.000.000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Điều hướng Tab: Thông tin vs Lời bài hát -->
+        <div class="modal-nav-tabs">
+          <button type="button" id="modalTabInfoBtn" class="modal-tab-btn active">
+            <i class="far fa-file-alt"></i> Mô tả & Thông tin
+          </button>
+          <button type="button" id="modalTabLyricsBtn" class="modal-tab-btn">
+            <i class="fas fa-music"></i> Lời bài hát (Lyrics)
+          </button>
+        </div>
+
+        <!-- Tab 1: Thông tin -->
+        <div id="modalPaneInfo" class="modal-tab-pane active">
+          <div id="modalDescText" class="desc-box">
+            Mô tả chi tiết bài hát...
+          </div>
+          <div id="modalExcerptBox" class="quote-box">
+            <p id="modalExcerptText">“Trích đoạn lời...”</p>
+          </div>
+        </div>
+
+        <!-- Tab 2: Lời bài hát -->
+        <div id="modalPaneLyrics" class="modal-tab-pane">
+          <div class="lyrics-header">
+            <span class="lyrics-title">
+              <i class="fas fa-quote-left"></i> Lời bài hát chính thức
+            </span>
+            <button type="button" id="copyLyricsBtn" class="copy-lyrics-btn">
+              <i class="far fa-copy"></i>
+              <span>Sao chép lời</span>
+            </button>
+          </div>
+          <div id="modalLyricsContent" class="lyrics-content-box">
+            Đang tải lời bài hát...
+          </div>
+        </div>
+
+        <!-- Nút hành động phía dưới modal -->
+        <div class="modal-actions">
+          <div class="modal-left-actions">
+            <button type="button" id="modalFavToggleBtn" class="modal-fav-btn">
+              <i class="far fa-heart"></i>
+              <span>Yêu thích</span>
+            </button>
+
+            <button type="button" id="modalPlayToggleBtn" class="primary-btn">
+              <i class="fas fa-play"></i>
+              <span>Nghe thử</span>
+            </button>
+          </div>
+
+          <a href="#" id="modalFullDetailLink" class="modal-detail-link">
+            Xem trang chi tiết đầy đủ <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       4. TRÌNH PHÁT NHẠC CỐ ĐỊNH (STICKY BOTTOM AUDIO PLAYER)
+       ========================================================= -->
+  <aside id="audioPlayerBar" class="audio-player-bar" aria-label="Trình phát nhạc cố định">
+    <div class="player-inner">
+      <!-- 4.1 Thông tin bài hát bên trái -->
+      <div class="player-track-info">
+        <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+          <div class="player-thumb-wrap">
+            <img id="playerThumb" src="" alt="Thumbnail bài hát" class="player-thumb" />
+            <div id="playerPulse" class="player-thumb-pulse" style="display: none;">
+              <span class="ping-dot"></span>
+            </div>
+          </div>
+          <div class="player-text-wrap">
+            <a href="#" id="playerTitleLink" class="player-title">Tên bài hát</a>
+            <p id="playerArtist" class="player-artist">Nghệ sĩ thể hiện</p>
+          </div>
+        </div>
+
+        <button type="button" id="playerFavBtn" class="player-fav-btn" aria-label="Yêu thích bài hát này">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
+
+      <!-- 4.2 Cụm điều khiển phát nhạc & Thanh tua ở giữa -->
+      <div class="player-center">
+        <div class="player-controls">
+          <button type="button" id="playerPrevBtn" class="player-ctrl-btn" aria-label="Bài trước đó" title="Phát bài trước">
+            <i class="fas fa-step-backward"></i>
+          </button>
+
+          <button type="button" id="playerMainPlayBtn" class="player-main-play-btn" aria-label="Phát hoặc tạm dừng" title="Phát/Tạm dừng">
+            <i id="playerPlayIcon" class="fas fa-play"></i>
+          </button>
+
+          <button type="button" id="playerNextBtn" class="player-ctrl-btn" aria-label="Bài kế tiếp" title="Phát bài tiếp theo">
+            <i class="fas fa-step-forward"></i>
+          </button>
+        </div>
+
+        <div class="player-scrubber-wrap">
+          <span id="playerCurrentTime" class="time-label current">00:00</span>
+          <input
+            type="range"
+            id="playerScrubber"
+            class="scrubber-slider"
+            min="0"
+            max="180"
+            value="0"
+            aria-label="Thanh tua thời lượng bài hát"
+          />
+          <span id="playerTotalTime" class="time-label">00:00</span>
+        </div>
+      </div>
+
+      <!-- 4.3 Cụm âm lượng bên phải -->
+      <div class="player-right">
+        <div class="volume-box">
+          <button type="button" id="playerMuteBtn" class="vol-btn" aria-label="Tắt hoặc bật tiếng">
+            <i class="fas fa-volume-up"></i>
+          </button>
+          <input
+            type="range"
+            id="playerVolSlider"
+            class="vol-slider"
+            min="0"
+            max="100"
+            value="80"
+            aria-label="Điều chỉnh mức âm lượng"
+          />
+          <span id="playerVolText" class="vol-text">80%</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       5. JAVASCRIPT MODULES
+       ========================================================= -->
+  <script src="js/data.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/app.js"></script>
+</body>
 </html>
